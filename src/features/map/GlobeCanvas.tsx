@@ -29,6 +29,7 @@ function GlobeCanvasInner() {
   const flyTo = useGlobeStore((s) => s.flyTo);
   const eqVisible = useGlobeStore((s) => s.layers.earthquakes);
   const flVisible = useGlobeStore((s) => s.layers.flights);
+  const setIsMapLoading = useGlobeStore((s) => s.setIsMapLoading);
 
   /* Telemetry data streams */
   const { data: earthquakes = [] } = useEarthquakes();
@@ -81,6 +82,20 @@ function GlobeCanvasInner() {
 
     map.on('load', () => {
       rehydrateMap(map);
+
+      // Smooth transition out once initial tiles render cleanly
+      let isDone = false;
+      const onInitialTilesReady = () => {
+        if (isDone) return;
+        isDone = true;
+        setTimeout(() => {
+          setIsMapLoading(false);
+        }, 150);
+      };
+
+      map.once('idle', onInitialTilesReady);
+      // Fallback timer so it never hangs indefinitely
+      setTimeout(onInitialTilesReady, 2000);
 
       /* Click handler for interactive points */
       map.on('click', (e) => {

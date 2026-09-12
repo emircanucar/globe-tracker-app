@@ -67,6 +67,7 @@ interface GlobeState {
   cameraTarget: CameraTarget | null;
   cameraState: CameraState;
   currentStyle: MapStyleId;
+  isMapLoading: boolean;
 
   toggleLayer: (layer: keyof Layers) => void;
   setMinQuakeMag: (mag: number) => void;
@@ -76,6 +77,7 @@ interface GlobeState {
   updateCameraState: (state: Partial<CameraState>) => void;
   resetNorth: () => void;
   resetView: () => void;
+  setIsMapLoading: (loading: boolean) => void;
 }
 
 export const useGlobeStore = create<GlobeState>((set, get) => ({
@@ -85,6 +87,7 @@ export const useGlobeStore = create<GlobeState>((set, get) => ({
   cameraTarget: null,
   cameraState: DEFAULT_CAMERA,
   currentStyle: DEFAULT_STYLE_ID,
+  isMapLoading: true,
 
   toggleLayer: (layer) =>
     set((state) => ({
@@ -98,6 +101,8 @@ export const useGlobeStore = create<GlobeState>((set, get) => ({
   flyTo: (target) => set({ cameraTarget: target }),
 
   setMapStyle: (style) => set({ currentStyle: style }),
+
+  setIsMapLoading: (loading) => set({ isMapLoading: loading }),
 
   updateCameraState: (state) =>
     set((prev) => ({
