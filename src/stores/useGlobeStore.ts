@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { type MapStyleId, DEFAULT_STYLE_ID } from '../types/mapStyles';
 
 /* ── Types ─────────────────────────────────────────────── */
 
@@ -45,11 +46,13 @@ interface GlobeState {
   minQuakeMag: number;
   selectedItem: SelectedItem;
   cameraTarget: CameraTarget | null;
+  currentStyle: MapStyleId;
 
   toggleLayer: (layer: keyof Layers) => void;
   setMinQuakeMag: (mag: number) => void;
   setSelectedItem: (item: SelectedItem) => void;
   flyTo: (target: CameraTarget) => void;
+  setMapStyle: (style: MapStyleId) => void;
 }
 
 export const useGlobeStore = create<GlobeState>((set) => ({
@@ -57,6 +60,7 @@ export const useGlobeStore = create<GlobeState>((set) => ({
   minQuakeMag: 4.5,
   selectedItem: null,
   cameraTarget: null,
+  currentStyle: DEFAULT_STYLE_ID,
 
   toggleLayer: (layer) =>
     set((state) => ({
@@ -68,4 +72,7 @@ export const useGlobeStore = create<GlobeState>((set) => ({
   setSelectedItem: (item) => set({ selectedItem: item }),
 
   flyTo: (target) => set({ cameraTarget: target }),
+
+  setMapStyle: (style) => set({ currentStyle: style }),
 }));
+

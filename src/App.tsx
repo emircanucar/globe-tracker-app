@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import GlobeCanvas from './components/GlobeCanvas';
 import ControlHUD from './components/ControlHUD';
 import LayerMenu from './components/LayerMenu';
+import StyleSelector from './components/StyleSelector';
 import DetailCard from './components/DetailCard';
 
 /* ── QueryClient (singleton outside component) ─────────── */
@@ -28,7 +29,13 @@ export default function App() {
 
         {/* UI Overlay (separate render tree) */}
         <ControlHUD />
-        <LayerMenu />
+
+        {/* Right HUD Controls: Layers & Map Styles */}
+        <aside className="fixed top-6 right-6 z-20 flex flex-col gap-3 w-64 select-none">
+          <LayerMenu />
+          <StyleSelector />
+        </aside>
+
         <DetailCard />
       </div>
     </QueryClientProvider>
