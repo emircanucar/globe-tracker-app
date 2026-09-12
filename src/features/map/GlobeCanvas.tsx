@@ -13,6 +13,7 @@ import {
   EQ_LAYERS,
   FL_LAYERS,
 } from './utils/mapLayerUtils';
+import { enhanceMapStyle } from './utils/styleEnhancer';
 
 function GlobeCanvasInner() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -23,18 +24,19 @@ function GlobeCanvasInner() {
   /* Global store subscriptions */
   const currentStyle = useGlobeStore((s) => s.currentStyle);
   const cameraTarget = useGlobeStore((s) => s.cameraTarget);
+  const setIsMapLoading = useGlobeStore((s) => s.setIsMapLoading);
   const updateCameraState = useGlobeStore((s) => s.updateCameraState);
   const setSelectedItem = useGlobeStore((s) => s.setSelectedItem);
   const flyTo = useGlobeStore((s) => s.flyTo);
+
   const eqVisible = useGlobeStore((s) => s.layers.earthquakes);
   const flVisible = useGlobeStore((s) => s.layers.flights);
-  const setIsMapLoading = useGlobeStore((s) => s.setIsMapLoading);
 
-  /* Telemetry data streams */
+  /* Data queries */
   const { data: earthquakes = [] } = useEarthquakes();
   const { data: flights = [] } = useFlights();
 
-  /* Keep stable refs to avoid stale closures during dynamic style reloads */
+  /* Keep mutable refs for listener closures */
   const eqDataRef = useRef<EarthquakePoint[]>(earthquakes);
   eqDataRef.current = earthquakes;
 
@@ -48,14 +50,24 @@ function GlobeCanvasInner() {
   flVisRef.current = flVisible;
 
   /* Helper to re-sync all sources, layers, and transparent sky */
-  const rehydrateMap = useCallback((map: maplibregl.Map) => {
-    setupGlobeLayers(map);
-    map.setSky({ 'sky-color': 'rgba(0, 0, 0, 0)' });
-    syncGeoJsonSource(map, 'earthquakes', eqDataRef.current);
-    syncGeoJsonSource(map, 'flights', flDataRef.current);
-    setLayersVisibility(map, EQ_LAYERS, eqVisRef.current);
-    setLayersVisibility(map, FL_LAYERS, flVisRef.current);
-  }, []);
+  const rehydrateMap = useCallback(
+    (map: maplibregl.Map) => {
+      setupGlobeLayers(map);
+      enhanceMapStyle(map, currentStyle);
+      map.setSky({
+        'sky-color': 'rgba(0, 0, 0, 0)',
+        'horizon-color': 'rgba(0, 0, 0, 0)',
+        'fog-color': 'rgba(0, 0, 0, 0)',
+        'fog-ground-blend': 0.8,
+        'atmosphere-blend': 0.85,
+      });
+      syncGeoJsonSource(map, 'earthquakes', eqDataRef.current);
+      syncGeoJsonSource(map, 'flights', flDataRef.current);
+      setLayersVisibility(map, EQ_LAYERS, eqVisRef.current);
+      setLayersVisibility(map, FL_LAYERS, flVisRef.current);
+    },
+    [currentStyle]
+  );
 
   /* ── 1. Map Initialization ──────────────────────────────── */
   useEffect(() => {
