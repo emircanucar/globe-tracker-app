@@ -90,9 +90,29 @@ export const useGlobeStore = create<GlobeState>((set, get) => ({
   isMapLoading: true,
 
   toggleLayer: (layer) =>
-    set((state) => ({
-      layers: { ...state.layers, [layer]: !state.layers[layer] },
-    })),
+    set((state) => {
+      const isCurrentlyActive = state.layers[layer];
+      const newLayers: Layers = {
+        earthquakes: false,
+        flights: false,
+      };
+      if (!isCurrentlyActive) {
+        newLayers[layer] = true;
+      }
+
+      // Deselect item if its layer is deactivated or if another layer is selected
+      let newSelectedItem = state.selectedItem;
+      if (newSelectedItem) {
+        if (!newLayers[newSelectedItem.type === 'earthquake' ? 'earthquakes' : 'flights']) {
+          newSelectedItem = null;
+        }
+      }
+
+      return {
+        layers: newLayers,
+        selectedItem: newSelectedItem,
+      };
+    }),
 
   setMinQuakeMag: (mag) => set({ minQuakeMag: mag }),
 

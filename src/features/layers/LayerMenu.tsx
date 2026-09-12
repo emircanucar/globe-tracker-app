@@ -41,8 +41,8 @@ function LayerMenuInner({ className = '' }: LayerMenuProps) {
         Katmanlar
       </span>
 
-      {/* Toggles */}
-      <div className="flex flex-col gap-1.5">
+      {/* Radio Group */}
+      <div className="flex flex-col gap-1.5" role="radiogroup" aria-label="Katman Seçimi">
         {LAYERS.map((cfg) => (
           <LayerItem
             key={cfg.key}
