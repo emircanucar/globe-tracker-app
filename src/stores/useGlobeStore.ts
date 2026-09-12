@@ -46,8 +46,8 @@ export interface CameraState {
 }
 
 export const DEFAULT_CAMERA: CameraState = {
-  lat: 25,
-  lng: 20,
+  lat: 39.0,
+  lng: 35.0,
   zoom: 1.8,
   bearing: 0,
   pitch: 0,

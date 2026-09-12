@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, memo, useCallback } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-import { useGlobeStore } from '../../stores/useGlobeStore';
+import { useGlobeStore, DEFAULT_CAMERA } from '../../stores/useGlobeStore';
 import { useEarthquakes, type EarthquakePoint } from '../earthquakes';
 import { useFlights, type FlightPoint } from '../flights';
 import { getMapStyleUrl } from './config/mapStyles';
@@ -67,8 +67,8 @@ function GlobeCanvasInner() {
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: initialStyleUrl,
-      center: [20, 25],
-      zoom: 1.8,
+      center: [DEFAULT_CAMERA.lng, DEFAULT_CAMERA.lat],
+      zoom: DEFAULT_CAMERA.zoom,
       attributionControl: false,
       fadeDuration: 0,
     });
