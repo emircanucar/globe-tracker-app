@@ -13,7 +13,6 @@ import {
   EQ_LAYERS,
   FL_LAYERS,
 } from './utils/mapLayerUtils';
-import { usePulseAnimation } from './hooks/usePulseAnimation';
 
 function GlobeCanvasInner() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -58,9 +57,6 @@ function GlobeCanvasInner() {
     setLayersVisibility(map, FL_LAYERS, flVisRef.current);
   }, []);
 
-  /* Pulse animation hook: paused when earthquakes layer is toggled off */
-  usePulseAnimation(mapRef, mapReady && eqVisible);
-
   /* ── 1. Map Initialization ──────────────────────────────── */
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -74,6 +70,7 @@ function GlobeCanvasInner() {
       center: [20, 25],
       zoom: 1.8,
       attributionControl: false,
+      fadeDuration: 0,
     });
 
     map.addControl(
@@ -147,27 +144,19 @@ function GlobeCanvasInner() {
         });
       }
 
-      /* Synchronize camera state (throttled with rAF for 60+ FPS smoothness) */
-      let rAFPending = false;
+      /* Synchronize camera state: ONLY on moveend, ZERO re-renders during active dragging */
       const handleCameraChange = () => {
-        if (rAFPending) return;
-        rAFPending = true;
-        requestAnimationFrame(() => {
-          rAFPending = false;
-          if (!mapRef.current) return;
-          const center = map.getCenter();
-          updateCameraState({
-            lat: center.lat,
-            lng: center.lng,
-            zoom: map.getZoom(),
-            bearing: map.getBearing(),
-            pitch: map.getPitch(),
-          });
+        if (!mapRef.current) return;
+        const center = map.getCenter();
+        updateCameraState({
+          lat: center.lat,
+          lng: center.lng,
+          zoom: map.getZoom(),
+          bearing: map.getBearing(),
+          pitch: map.getPitch(),
         });
       };
 
-      map.on('rotate', handleCameraChange);
-      map.on('pitch', handleCameraChange);
       map.on('moveend', handleCameraChange);
 
       setMapReady(true);
