@@ -1,75 +1,39 @@
-# React + TypeScript + Vite
+# Globe Tracker — 3D Coğrafi Veri Merkezi
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Deprem ve uçuş hareketlerini 3D küre projeksiyonu üzerinde gösteren coğrafi takip uygulaması.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Kategori | Teknoloji |
+|---|---|
+| **Framework & Dil** | [React 19](https://react.dev/), [TypeScript 6](https://www.typescriptlang.org/) |
+| **Derleyici & Build** | [Vite 8](https://vitejs.dev/) |
+| **Harita & 3D WebGL** | [MapLibre GL JS v6](https://maplibre.org/) (Globe projection) |
+| **Harita Sağlayıcı** | [OpenFreeMap](https://openfreemap.org/) Vector Tiles |
+| **Durum Yönetimi** | [Zustand v5](https://zustand.docs.pmnd.rs/) |
+| **Veri Yönetimi & Önbellek** | [TanStack React Query v5](https://tanstack.com/query) |
+| **Stil & Tasarım** | [Tailwind CSS v4](https://tailwindcss.com/) + Vanilla CSS |
+| **İkonlar** | [Lucide React](https://lucide.dev/) |
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Kurulum & Çalıştırma
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Gereksinimler: **Node.js 18+** ve **npm**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```bash
+# Bağımlılıkları yükle
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Geliştirme sunucusunu başlat
+npm run dev
 
+# Üretim derlemesi al
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
