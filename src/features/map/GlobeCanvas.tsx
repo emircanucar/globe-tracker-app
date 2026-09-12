@@ -48,17 +48,18 @@ function GlobeCanvasInner() {
   const flVisRef = useRef<boolean>(flVisible);
   flVisRef.current = flVisible;
 
-  /* Helper to re-sync all sources and visibility */
+  /* Helper to re-sync all sources, layers, and transparent sky */
   const rehydrateMap = useCallback((map: maplibregl.Map) => {
     setupGlobeLayers(map);
+    map.setSky({ 'sky-color': 'rgba(0, 0, 0, 0)' });
     syncGeoJsonSource(map, 'earthquakes', eqDataRef.current);
     syncGeoJsonSource(map, 'flights', flDataRef.current);
     setLayersVisibility(map, EQ_LAYERS, eqVisRef.current);
     setLayersVisibility(map, FL_LAYERS, flVisRef.current);
   }, []);
 
-  /* Pulse animation hook (Single Responsibility) */
-  usePulseAnimation(mapRef, mapReady);
+  /* Pulse animation hook: paused when earthquakes layer is toggled off */
+  usePulseAnimation(mapRef, mapReady && eqVisible);
 
   /* ── 1. Map Initialization ──────────────────────────────── */
   useEffect(() => {
@@ -136,23 +137,32 @@ function GlobeCanvasInner() {
         }
       });
 
-      /* Hover cursor state */
-      map.on('mousemove', (e) => {
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ['eq-main', 'fl-main'],
+      /* Hover cursor state (event-driven, zero polling overhead) */
+      for (const layer of ['eq-main', 'fl-main']) {
+        map.on('mouseenter', layer, () => {
+          map.getCanvas().style.cursor = 'pointer';
         });
-        map.getCanvas().style.cursor = features.length ? 'pointer' : '';
-      });
+        map.on('mouseleave', layer, () => {
+          map.getCanvas().style.cursor = '';
+        });
+      }
 
-      /* Synchronize camera state (bearing, pitch, center, zoom) */
+      /* Synchronize camera state (throttled with rAF for 60+ FPS smoothness) */
+      let rAFPending = false;
       const handleCameraChange = () => {
-        const center = map.getCenter();
-        updateCameraState({
-          lat: center.lat,
-          lng: center.lng,
-          zoom: map.getZoom(),
-          bearing: map.getBearing(),
-          pitch: map.getPitch(),
+        if (rAFPending) return;
+        rAFPending = true;
+        requestAnimationFrame(() => {
+          rAFPending = false;
+          if (!mapRef.current) return;
+          const center = map.getCenter();
+          updateCameraState({
+            lat: center.lat,
+            lng: center.lng,
+            zoom: map.getZoom(),
+            bearing: map.getBearing(),
+            pitch: map.getPitch(),
+          });
         });
       };
 

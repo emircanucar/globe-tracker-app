@@ -1,6 +1,7 @@
 export { default as GlobeCanvas } from './GlobeCanvas';
 export { default as OrientationControl } from './components/OrientationControl';
 export { default as MapLoader } from './components/MapLoader';
+export { default as SpaceBackground } from './components/SpaceBackground';
 export * from './config/mapStyles';
 export * from './config/layersConfig';
 export * from './utils/mapLayerUtils';

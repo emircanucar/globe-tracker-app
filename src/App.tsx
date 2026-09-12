@@ -1,5 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { GlobeCanvas, OrientationControl, MapLoader } from './features/map';
+import {
+  GlobeCanvas,
+  OrientationControl,
+  MapLoader,
+  SpaceBackground,
+} from './features/map';
 import { ControlHUD } from './features/hud';
 import { MagnitudeFilter } from './features/earthquakes';
 import { LayerMenu } from './features/layers';
@@ -22,9 +27,12 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <main className="relative w-full h-screen overflow-hidden bg-black select-none">
-        {/* Dynamic Map Initialization Loader (eliminates glitchy tile loading) */}
+      <main className="relative w-full h-screen overflow-hidden bg-[#030712] select-none">
+        {/* Dynamic Map Initialization Loader */}
         <MapLoader />
+
+        {/* 0. Synthetic Space & Galaxy Environment */}
+        <SpaceBackground />
 
         {/* 1. 3D WebGL Globe Viewport */}
         <section className="absolute inset-0" aria-label="3D Harita Küresi">
