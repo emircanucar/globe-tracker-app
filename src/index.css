@@ -229,6 +229,50 @@ body,
   animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* ── Apple/Vercel Loader Animations ────────────────────── */
+
+@keyframes laser-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-laser-sweep {
+  animation: laser-sweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-orbit-spin {
+  animation: orbit-spin 10s linear infinite;
+}
+
+@keyframes orbit-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-orbit-reverse {
+  animation: orbit-reverse 15s linear infinite;
+}
+
 /* ── MapLibre overrides ────────────────────────────────── */
 
 .maplibregl-ctrl-attrib {
