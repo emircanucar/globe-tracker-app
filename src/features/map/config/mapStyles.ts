@@ -13,19 +13,27 @@ export interface MapStyleOption {
 
 export const MAP_STYLES: MapStyleOption[] = [
   {
+    id: 'bright',
+    name: 'Bright',
+    url: 'https://tiles.openfreemap.org/styles/bright',
+    description: 'Canlı & Detaylı',
+    accent: '#00bbffff',
+    badge: 'Varsayılan',
+  },
+  {
     id: 'liberty',
     name: 'Liberty',
     url: 'https://tiles.openfreemap.org/styles/liberty',
     description: 'Renkli & Topoğrafik',
-    accent: '#38bdf8',
-    badge: 'Varsayılan',
+    accent: '#10b981',
+    badge: 'Klasik',
   },
   {
     id: 'dark',
     name: 'Dark',
     url: 'https://tiles.openfreemap.org/styles/dark',
     description: 'Karanlık & Gece',
-    accent: '#a855f7',
+    accent: '#333333ff',
     badge: 'Gece',
   },
   {
@@ -33,20 +41,12 @@ export const MAP_STYLES: MapStyleOption[] = [
     name: 'Positron',
     url: 'https://tiles.openfreemap.org/styles/positron',
     description: 'Açık & Minimal',
-    accent: '#10b981',
+    accent: '#bdbdbdff',
     badge: 'Minimal',
-  },
-  {
-    id: 'bright',
-    name: 'Bright',
-    url: 'https://tiles.openfreemap.org/styles/bright',
-    description: 'Canlı & Detaylı',
-    accent: '#f59e0b',
-    badge: 'Vektör',
   },
 ];
 
-export const DEFAULT_STYLE_ID: MapStyleId = 'liberty';
+export const DEFAULT_STYLE_ID: MapStyleId = 'bright';
 
 export function getMapStyleUrl(id: MapStyleId): string {
   const found = MAP_STYLES.find((s) => s.id === id);

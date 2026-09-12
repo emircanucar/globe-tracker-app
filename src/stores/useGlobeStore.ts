@@ -81,8 +81,8 @@ interface GlobeState {
 }
 
 export const useGlobeStore = create<GlobeState>((set, get) => ({
-  layers: { earthquakes: true, flights: false },
-  minQuakeMag: 4.5,
+  layers: { earthquakes: false, flights: false },
+  minQuakeMag: 6.0,
   selectedItem: null,
   cameraTarget: null,
   cameraState: DEFAULT_CAMERA,

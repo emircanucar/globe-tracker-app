@@ -21,9 +21,7 @@ function StyleSelectorInner({ className = '' }: StyleSelectorProps) {
           <Palette size={13} className="text-zinc-400" />
           Harita Stili
         </span>
-        <span className="text-[10px] font-mono text-zinc-500 uppercase">
-          Vektör
-        </span>
+
       </div>
 
       {/* Style Grid */}
