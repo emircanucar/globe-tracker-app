@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { GlobeCanvas } from './features/map';
+import { GlobeCanvas, OrientationControl } from './features/map';
 import { ControlHUD } from './features/hud';
 import { MagnitudeFilter } from './features/earthquakes';
 import { LayerMenu } from './features/layers';
@@ -42,7 +42,12 @@ export default function App() {
           <StyleSelector />
         </aside>
 
-        {/* 5. Center-Bottom: Active Entity Telemetry Inspection */}
+        {/* 5. Bottom-Right: Pole (North) & Perspective Reset Control */}
+        <div className="fixed bottom-6 right-6 z-20">
+          <OrientationControl />
+        </div>
+
+        {/* 6. Center-Bottom: Active Entity Telemetry Inspection */}
         <DetailCard />
       </main>
     </QueryClientProvider>

@@ -24,6 +24,7 @@ function GlobeCanvasInner() {
   /* Global store subscriptions */
   const currentStyle = useGlobeStore((s) => s.currentStyle);
   const cameraTarget = useGlobeStore((s) => s.cameraTarget);
+  const updateCameraState = useGlobeStore((s) => s.updateCameraState);
   const setSelectedItem = useGlobeStore((s) => s.setSelectedItem);
   const flyTo = useGlobeStore((s) => s.flyTo);
   const eqVisible = useGlobeStore((s) => s.layers.earthquakes);
@@ -128,6 +129,22 @@ function GlobeCanvasInner() {
         map.getCanvas().style.cursor = features.length ? 'pointer' : '';
       });
 
+      /* Synchronize camera state (bearing, pitch, center, zoom) */
+      const handleCameraChange = () => {
+        const center = map.getCenter();
+        updateCameraState({
+          lat: center.lat,
+          lng: center.lng,
+          zoom: map.getZoom(),
+          bearing: map.getBearing(),
+          pitch: map.getPitch(),
+        });
+      };
+
+      map.on('rotate', handleCameraChange);
+      map.on('pitch', handleCameraChange);
+      map.on('moveend', handleCameraChange);
+
       setMapReady(true);
     });
 
@@ -179,7 +196,9 @@ function GlobeCanvasInner() {
     mapRef.current.flyTo({
       center: [cameraTarget.lng, cameraTarget.lat],
       zoom: cameraTarget.zoom,
-      duration: 1200,
+      bearing: cameraTarget.bearing ?? 0,
+      pitch: cameraTarget.pitch ?? 0,
+      duration: cameraTarget.duration ?? 1200,
       essential: true,
     });
   }, [cameraTarget, mapReady]);
