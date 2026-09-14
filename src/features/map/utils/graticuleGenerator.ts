@@ -1,9 +1,26 @@
+export interface GraticuleFeature {
+  type: 'Feature';
+  geometry: {
+    type: 'LineString';
+    coordinates: [number, number][];
+  };
+  properties: {
+    type: 'equator' | 'parallel' | 'prime-meridian' | 'meridian';
+    value: number;
+  };
+}
+
+export interface GraticuleCollection {
+  type: 'FeatureCollection';
+  features: GraticuleFeature[];
+}
+
 /**
  * Generates GeoJSON for geographic meridians (longitude) and parallels (latitude).
  * Renders curved coordinate grid lines seamlessly on the 3D globe projection.
  */
-export function generateGraticuleGeoJSON(): GeoJSON.FeatureCollection {
-  const features: GeoJSON.Feature[] = [];
+export function generateGraticuleGeoJSON(): GraticuleCollection {
+  const features: GraticuleFeature[] = [];
 
   // Parallels (latitude lines every 15 degrees from -75 to 75)
   for (let lat = -75; lat <= 75; lat += 15) {

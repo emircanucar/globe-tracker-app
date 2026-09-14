@@ -57,7 +57,7 @@ export function enhanceMapStyle(map: MapLibreMap, currentStyleId: MapStyleId) {
 
           if (isNameReference) {
             try {
-              map.setLayoutProperty(layer.id, 'text-field', localizedLabelExpression);
+              map.setLayoutProperty(layer.id, 'text-field', localizedLabelExpression as any);
             } catch {
               // Safe fallback
             }
@@ -77,9 +77,9 @@ export function enhanceMapStyle(map: MapLibreMap, currentStyleId: MapStyleId) {
             ];
 
             if (existingFilter) {
-              map.setFilter(layer.id, ['all', existingFilter, blockCondition]);
+              map.setFilter(layer.id, ['all', existingFilter, blockCondition] as any);
             } else {
-              map.setFilter(layer.id, blockCondition);
+              map.setFilter(layer.id, blockCondition as any);
             }
           } catch {
             // Ignore filter syntax mismatches

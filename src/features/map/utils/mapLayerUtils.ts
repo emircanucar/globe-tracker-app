@@ -103,10 +103,10 @@ export function setupGlobeLayers(map: MapLibreMap) {
 /**
  * Populates a GeoJSON source with point features
  */
-export function syncGeoJsonSource(
+export function syncGeoJsonSource<T extends { lat: number; lng: number }>(
   map: MapLibreMap,
   sourceId: 'earthquakes' | 'flights',
-  points: Array<{ lat: number; lng: number; [key: string]: unknown }>
+  points: readonly T[]
 ) {
   const src = map.getSource(sourceId) as GeoJSONSource | undefined;
   if (!src) return;
