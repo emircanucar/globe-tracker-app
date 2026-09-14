@@ -10,6 +10,14 @@ function MapLoaderInner() {
   const isMapLoading = useGlobeStore((s) => s.isMapLoading);
   const [shouldRender, setShouldRender] = useState(true);
 
+  // Production Failsafe: Never let loading overlay stay mounted longer than 3.5s under any circumstance
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      useGlobeStore.getState().setIsMapLoading(false);
+    }, 3500);
+    return () => clearTimeout(fallbackTimer);
+  }, []);
+
   // Keep in DOM while fading out, unmount after transition completes
   useEffect(() => {
     if (!isMapLoading) {

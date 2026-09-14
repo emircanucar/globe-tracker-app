@@ -90,22 +90,23 @@ function GlobeCanvasInner() {
       'bottom-right'
     );
 
+    /* Global safety fallback timer: Never allow loading screen to hang if tiles or network are delayed */
+    const safetyTimer = setTimeout(() => {
+      setIsMapLoading(false);
+    }, 2500);
+
     map.on('load', () => {
-      rehydrateMap(map);
+      setMapReady(true);
+      try {
+        rehydrateMap(map);
+      } catch (err) {
+        console.warn('Map rehydrate notice:', err);
+      }
 
-      // Smooth transition out once initial tiles render cleanly
-      let isDone = false;
-      const onInitialTilesReady = () => {
-        if (isDone) return;
-        isDone = true;
-        setTimeout(() => {
-          setIsMapLoading(false);
-        }, 150);
-      };
-
-      map.once('idle', onInitialTilesReady);
-      // Fallback timer so it never hangs indefinitely
-      setTimeout(onInitialTilesReady, 2000);
+      // Smooth transition out once initial render is ready
+      setTimeout(() => {
+        setIsMapLoading(false);
+      }, 150);
 
       /* Click handler for interactive points */
       map.on('click', (e) => {
@@ -170,13 +171,17 @@ function GlobeCanvasInner() {
       };
 
       map.on('moveend', handleCameraChange);
+    });
 
-      setMapReady(true);
+    map.on('error', (err) => {
+      console.warn('MapLibre notice:', err);
+      setIsMapLoading(false);
     });
 
     mapRef.current = map;
 
     return () => {
+      clearTimeout(safetyTimer);
       map.remove();
       mapRef.current = null;
       setMapReady(false);

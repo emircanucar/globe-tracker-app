@@ -99,6 +99,7 @@ export function enhanceMapStyle(map: MapLibreMap, currentStyleId: MapStyleId) {
     // Grid lines (Parallels & Meridians)
     if (!map.getLayer('graticule-lines')) {
       const isDark = currentStyleId === 'dark';
+      const beforeId = map.getLayer('eq-glow') ? 'eq-glow' : undefined;
       map.addLayer(
         {
           id: 'graticule-lines',
@@ -121,7 +122,7 @@ export function enhanceMapStyle(map: MapLibreMap, currentStyleId: MapStyleId) {
             'line-dasharray': [2, 3],
           },
         },
-        'eq-glow' // Place underneath custom data markers
+        beforeId
       );
     }
 
