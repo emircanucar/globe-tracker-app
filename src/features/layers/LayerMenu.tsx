@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Activity, Plane } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import { useGlobeStore, type Layers } from '../../stores/useGlobeStore';
 import { GlassPanel } from '../../components/ui';
 import LayerItem from './LayerItem';
@@ -17,12 +17,6 @@ const LAYERS: LayerConfig[] = [
     label: 'Depremler',
     icon: <Activity size={14} />,
     activeAccent: 'text-orange-400',
-  },
-  {
-    key: 'flights',
-    label: 'Uçuşlar',
-    icon: <Plane size={14} />,
-    activeAccent: 'text-blue-400',
   },
 ];
 

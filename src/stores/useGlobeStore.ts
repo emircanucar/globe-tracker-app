@@ -14,19 +14,7 @@ export interface EarthquakeItem {
   time: number;
 }
 
-export interface FlightItem {
-  type: 'flight';
-  callsign: string;
-  originCountry: string;
-  lat: number;
-  lng: number;
-  altitude: number;
-  velocity: number;
-  heading: number;
-  onGround: boolean;
-}
-
-export type SelectedItem = EarthquakeItem | FlightItem | null;
+export type SelectedItem = EarthquakeItem | null;
 
 export interface CameraTarget {
   lat: number;
@@ -55,7 +43,6 @@ export const DEFAULT_CAMERA: CameraState = {
 
 export interface Layers {
   earthquakes: boolean;
-  flights: boolean;
 }
 
 /* ── Store ──────────────────────────────────────────────── */
@@ -81,7 +68,7 @@ interface GlobeState {
 }
 
 export const useGlobeStore = create<GlobeState>((set, get) => ({
-  layers: { earthquakes: false, flights: false },
+  layers: { earthquakes: false },
   minQuakeMag: 6.0,
   selectedItem: null,
   cameraTarget: null,
@@ -94,18 +81,15 @@ export const useGlobeStore = create<GlobeState>((set, get) => ({
       const isCurrentlyActive = state.layers[layer];
       const newLayers: Layers = {
         earthquakes: false,
-        flights: false,
       };
       if (!isCurrentlyActive) {
         newLayers[layer] = true;
       }
 
-      // Deselect item if its layer is deactivated or if another layer is selected
+      // Deselect item if its layer is deactivated
       let newSelectedItem = state.selectedItem;
-      if (newSelectedItem) {
-        if (!newLayers[newSelectedItem.type === 'earthquake' ? 'earthquakes' : 'flights']) {
-          newSelectedItem = null;
-        }
+      if (newSelectedItem && !newLayers.earthquakes) {
+        newSelectedItem = null;
       }
 
       return {
@@ -152,5 +136,3 @@ export const useGlobeStore = create<GlobeState>((set, get) => ({
     });
   },
 }));
-
-

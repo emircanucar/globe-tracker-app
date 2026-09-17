@@ -4,14 +4,12 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { useGlobeStore, DEFAULT_CAMERA } from '../../stores/useGlobeStore';
 import { useEarthquakes, type EarthquakePoint } from '../earthquakes';
-import { useFlights, type FlightPoint } from '../flights';
 import { getMapStyleUrl } from './config/mapStyles';
 import {
   setupGlobeLayers,
   syncGeoJsonSource,
   setLayersVisibility,
   EQ_LAYERS,
-  FL_LAYERS,
 } from './utils/mapLayerUtils';
 import { enhanceMapStyle } from './utils/styleEnhancer';
 
@@ -30,24 +28,16 @@ function GlobeCanvasInner() {
   const flyTo = useGlobeStore((s) => s.flyTo);
 
   const eqVisible = useGlobeStore((s) => s.layers.earthquakes);
-  const flVisible = useGlobeStore((s) => s.layers.flights);
 
   /* Data queries */
   const { data: earthquakes = [] } = useEarthquakes();
-  const { data: flights = [] } = useFlights();
 
   /* Keep mutable refs for listener closures */
   const eqDataRef = useRef<EarthquakePoint[]>(earthquakes);
   eqDataRef.current = earthquakes;
 
-  const flDataRef = useRef<FlightPoint[]>(flights);
-  flDataRef.current = flights;
-
   const eqVisRef = useRef<boolean>(eqVisible);
   eqVisRef.current = eqVisible;
-
-  const flVisRef = useRef<boolean>(flVisible);
-  flVisRef.current = flVisible;
 
   /* Helper to re-sync all sources, layers, and transparent sky */
   const rehydrateMap = useCallback(
@@ -62,9 +52,7 @@ function GlobeCanvasInner() {
         'atmosphere-blend': 0.85,
       });
       syncGeoJsonSource(map, 'earthquakes', eqDataRef.current);
-      syncGeoJsonSource(map, 'flights', flDataRef.current);
       setLayersVisibility(map, EQ_LAYERS, eqVisRef.current);
-      setLayersVisibility(map, FL_LAYERS, flVisRef.current);
     },
     [currentStyle]
   );
@@ -108,10 +96,10 @@ function GlobeCanvasInner() {
         setIsMapLoading(false);
       }, 150);
 
-      /* Click handler for interactive points */
+      /* Click handler for interactive earthquake points */
       map.on('click', (e) => {
         const features = map.queryRenderedFeatures(e.point, {
-          layers: ['eq-main', 'fl-main'],
+          layers: ['eq-main'],
         });
         if (!features.length) return;
 
@@ -131,31 +119,16 @@ function GlobeCanvasInner() {
             time: Number(p.time),
           });
           flyTo({ lat: Number(p.lat), lng: Number(p.lng), zoom: 6 });
-        } else if (f.layer.id === 'fl-main') {
-          setSelectedItem({
-            type: 'flight',
-            callsign: String(p.callsign),
-            originCountry: String(p.originCountry),
-            lat: Number(p.lat),
-            lng: Number(p.lng),
-            altitude: Number(p.altitude),
-            velocity: Number(p.velocity),
-            heading: Number(p.heading),
-            onGround: p.onGround === true || p.onGround === 'true',
-          });
-          flyTo({ lat: Number(p.lat), lng: Number(p.lng), zoom: 6 });
         }
       });
 
       /* Hover cursor state (event-driven, zero polling overhead) */
-      for (const layer of ['eq-main', 'fl-main']) {
-        map.on('mouseenter', layer, () => {
-          map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', layer, () => {
-          map.getCanvas().style.cursor = '';
-        });
-      }
+      map.on('mouseenter', 'eq-main', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.on('mouseleave', 'eq-main', () => {
+        map.getCanvas().style.cursor = '';
+      });
 
       /* Synchronize camera state: ONLY on moveend, ZERO re-renders during active dragging */
       const handleCameraChange = () => {
@@ -209,17 +182,11 @@ function GlobeCanvasInner() {
     syncGeoJsonSource(mapRef.current, 'earthquakes', earthquakes);
   }, [earthquakes, mapReady]);
 
-  useEffect(() => {
-    if (!mapReady || !mapRef.current) return;
-    syncGeoJsonSource(mapRef.current, 'flights', flights);
-  }, [flights, mapReady]);
-
   /* ── 4. Layer Visibility ────────────────────────────────── */
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
     setLayersVisibility(mapRef.current, EQ_LAYERS, eqVisible);
-    setLayersVisibility(mapRef.current, FL_LAYERS, flVisible);
-  }, [eqVisible, flVisible, mapReady]);
+  }, [eqVisible, mapReady]);
 
   /* ── 5. Camera FlyTo Transitions ────────────────────────── */
   useEffect(() => {

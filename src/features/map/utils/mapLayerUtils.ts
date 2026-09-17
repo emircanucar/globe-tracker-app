@@ -2,9 +2,7 @@ import type { Map as MapLibreMap, GeoJSONSource } from 'maplibre-gl';
 import {
   EMPTY_FC,
   QUAKE_COLOR,
-  FLIGHT_COLOR,
   EQ_LAYERS,
-  FL_LAYERS,
 } from '../config/layersConfig';
 
 /**
@@ -17,9 +15,6 @@ export function setupGlobeLayers(map: MapLibreMap) {
   /* 2. Sources */
   if (!map.getSource('earthquakes')) {
     map.addSource('earthquakes', { type: 'geojson', data: EMPTY_FC });
-  }
-  if (!map.getSource('flights')) {
-    map.addSource('flights', { type: 'geojson', data: EMPTY_FC });
   }
 
   /* 3. Earthquake layers */
@@ -67,37 +62,6 @@ export function setupGlobeLayers(map: MapLibreMap) {
       },
     });
   }
-
-  /* 4. Flight layers */
-  if (!map.getLayer('fl-glow')) {
-    map.addLayer({
-      id: 'fl-glow',
-      type: 'circle',
-      source: 'flights',
-      paint: {
-        'circle-radius': 6,
-        'circle-color': FLIGHT_COLOR,
-        'circle-opacity': 0.12,
-        'circle-blur': 1,
-      },
-    });
-  }
-
-  if (!map.getLayer('fl-main')) {
-    map.addLayer({
-      id: 'fl-main',
-      type: 'circle',
-      source: 'flights',
-      paint: {
-        'circle-radius': 3,
-        'circle-color': FLIGHT_COLOR,
-        'circle-opacity': 0.9,
-        'circle-stroke-width': 0.5,
-        'circle-stroke-color': '#ffffff',
-        'circle-stroke-opacity': 0.3,
-      },
-    });
-  }
 }
 
 /**
@@ -105,7 +69,7 @@ export function setupGlobeLayers(map: MapLibreMap) {
  */
 export function syncGeoJsonSource<T extends { lat: number; lng: number }>(
   map: MapLibreMap,
-  sourceId: 'earthquakes' | 'flights',
+  sourceId: 'earthquakes',
   points: readonly T[]
 ) {
   const src = map.getSource(sourceId) as GeoJSONSource | undefined;
@@ -137,4 +101,4 @@ export function setLayersVisibility(
   }
 }
 
-export { EQ_LAYERS, FL_LAYERS };
+export { EQ_LAYERS };

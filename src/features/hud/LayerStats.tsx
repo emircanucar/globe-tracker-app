@@ -1,8 +1,7 @@
 import React, { memo } from 'react';
-import { Activity, Plane, Radio } from 'lucide-react';
+import { Activity, Radio } from 'lucide-react';
 import { useGlobeStore } from '../../stores/useGlobeStore';
 import { useEarthquakes } from '../earthquakes';
-import { useFlights } from '../flights';
 
 interface StatRowProps {
   icon: React.ReactNode;
@@ -27,12 +26,7 @@ function StatRow({ icon, label, count, color }: StatRowProps) {
 
 function LayerStatsInner() {
   const earthquakesEnabled = useGlobeStore((s) => s.layers.earthquakes);
-  const flightsEnabled = useGlobeStore((s) => s.layers.flights);
-
   const { data: earthquakes = [], isLoading: isEarthquakesLoading } = useEarthquakes();
-  const { data: flights = [], isLoading: isFlightsLoading } = useFlights();
-
-  const isAnyLayerActive = earthquakesEnabled || flightsEnabled;
 
   return (
     <div className="flex flex-col gap-2">
@@ -44,15 +38,7 @@ function LayerStatsInner() {
           color="text-orange-400"
         />
       )}
-      {flightsEnabled && (
-        <StatRow
-          icon={<Plane size={12} />}
-          label="Uçuşlar"
-          count={isFlightsLoading ? '...' : flights.length}
-          color="text-blue-400"
-        />
-      )}
-      {!isAnyLayerActive && (
+      {!earthquakesEnabled && (
         <div className="flex items-center gap-2 text-zinc-600 text-xs">
           <Radio size={12} />
           <span>Katman seçilmedi</span>

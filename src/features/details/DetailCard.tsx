@@ -3,7 +3,6 @@ import { X } from 'lucide-react';
 import { useGlobeStore } from '../../stores/useGlobeStore';
 import { GlassPanel } from '../../components/ui';
 import { EarthquakeDetail } from '../earthquakes';
-import { FlightDetail } from '../flights';
 
 function DetailCardInner() {
   const selectedItem = useGlobeStore((s) => s.selectedItem);
@@ -34,12 +33,8 @@ function DetailCardInner() {
           <X size={15} />
         </button>
 
-        {/* Dynamic Detail Body based on selected entity type */}
-        {selectedItem.type === 'earthquake' ? (
-          <EarthquakeDetail item={selectedItem} onFlyTo={handleFlyTo} />
-        ) : (
-          <FlightDetail item={selectedItem} onFlyTo={handleFlyTo} />
-        )}
+        {/* Earthquake Detail Body */}
+        <EarthquakeDetail item={selectedItem} onFlyTo={handleFlyTo} />
       </GlassPanel>
     </div>
   );
