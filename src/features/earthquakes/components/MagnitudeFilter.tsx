@@ -14,7 +14,7 @@ function MagnitudeFilterInner({ className = '' }: MagnitudeFilterProps) {
   if (!earthquakesEnabled) return null;
 
   return (
-    <GlassPanel className={`px-5 py-4 w-60 select-none animate-fade-in ${className}`}>
+    <GlassPanel className={`px-5 py-4 w-full sm:w-60 select-none animate-fade-in ${className}`}>
       <div className="flex items-center justify-between mb-3">
         <span className="text-[11px] font-medium text-zinc-400 tracking-wide">
           Min Büyüklük

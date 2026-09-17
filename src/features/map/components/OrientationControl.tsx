@@ -37,7 +37,7 @@ function OrientationControlInner({ className = '' }: OrientationControlProps) {
             : 'Kuzey Hizalı'
         }
         className={`
-          group relative flex items-center justify-center w-8 h-8 rounded-xl
+          group relative flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 rounded-xl
           transition-all duration-300 cursor-pointer
           ${
             isRotated
@@ -77,7 +77,7 @@ function OrientationControlInner({ className = '' }: OrientationControlProps) {
         onClick={resetView}
         title="Küre Görünümünü Sıfırla (Dünya Bakışı)"
         className="
-          flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl
+          flex items-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1.5 rounded-xl
           bg-white/[0.03] hover:bg-white/[0.08] active:scale-[0.98]
           border border-white/[0.04] hover:border-white/10
           text-zinc-400 hover:text-white

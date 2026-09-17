@@ -21,16 +21,20 @@ function DetailCardInner() {
   if (!selectedItem) return null;
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 w-full max-w-[420px] px-4 animate-slide-up">
-      <GlassPanel variant="card" className="p-5 relative">
+    <div
+      className="fixed bottom-4 inset-x-3 sm:bottom-6 sm:left-1/2 sm:-translate-x-1/2 sm:w-full sm:max-w-[420px] sm:px-4 sm:inset-x-auto z-40 animate-slide-up"
+      role="region"
+      aria-label="Deprem Detay Bilgisi"
+    >
+      <GlassPanel variant="card" className="p-4 sm:p-5 relative shadow-2xl">
         {/* Close Button */}
         <button
           id="detail-close"
           onClick={handleClose}
-          className="absolute top-4 right-4 p-1 rounded-lg hover:bg-white/[0.06] transition-colors text-zinc-500 hover:text-zinc-300 cursor-pointer"
+          className="absolute top-3.5 right-3.5 p-1.5 rounded-xl hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors text-zinc-400 hover:text-white cursor-pointer"
           aria-label="Detay Kartını Kapat"
         >
-          <X size={15} />
+          <X size={16} />
         </button>
 
         {/* Earthquake Detail Body */}

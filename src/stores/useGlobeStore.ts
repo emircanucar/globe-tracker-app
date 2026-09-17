@@ -55,6 +55,7 @@ interface GlobeState {
   cameraState: CameraState;
   currentStyle: MapStyleId;
   isMapLoading: boolean;
+  isMobileMenuOpen: boolean;
 
   toggleLayer: (layer: keyof Layers) => void;
   setMinQuakeMag: (mag: number) => void;
@@ -65,6 +66,8 @@ interface GlobeState {
   resetNorth: () => void;
   resetView: () => void;
   setIsMapLoading: (loading: boolean) => void;
+  setMobileMenuOpen: (open: boolean) => void;
+  toggleMobileMenu: () => void;
 }
 
 export const useGlobeStore = create<GlobeState>((set, get) => ({
@@ -75,6 +78,10 @@ export const useGlobeStore = create<GlobeState>((set, get) => ({
   cameraState: DEFAULT_CAMERA,
   currentStyle: DEFAULT_STYLE_ID,
   isMapLoading: true,
+  isMobileMenuOpen: false,
+
+  setMobileMenuOpen: (open) => set({ isMobileMenuOpen: open }),
+  toggleMobileMenu: () => set((s) => ({ isMobileMenuOpen: !s.isMobileMenuOpen })),
 
   toggleLayer: (layer) =>
     set((state) => {
