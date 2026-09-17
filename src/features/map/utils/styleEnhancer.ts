@@ -65,15 +65,20 @@ export function enhanceMapStyle(map: MapLibreMap, currentStyleId: MapStyleId) {
         }
 
         // 2. Feature Filter override for country/place labels
-        if (layer.id.includes('country') || layer.id.includes('place') || layer.id.includes('state')) {
+        const isGeoLabel =
+          /\bcountry\b/.test(layer.id) ||
+          /\bplace\b/.test(layer.id) ||
+          /\blabel_state\b/.test(layer.id);
+
+        if (isGeoLabel) {
           try {
             const existingFilter = map.getFilter(layer.id);
             const blockCondition = [
               'all',
-              ['!in', ['get', 'name:en'], ['literal', EXCLUDED_ENTITIES]],
-              ['!in', ['get', 'name:tr'], ['literal', EXCLUDED_ENTITIES]],
-              ['!in', ['get', 'name'], ['literal', EXCLUDED_ENTITIES]],
-              ['!in', ['get', 'iso_a2'], ['literal', EXCLUDED_CODES]],
+              ['!', ['in', ['get', 'name:en'], ['literal', EXCLUDED_ENTITIES]]],
+              ['!', ['in', ['get', 'name:tr'], ['literal', EXCLUDED_ENTITIES]]],
+              ['!', ['in', ['get', 'name'], ['literal', EXCLUDED_ENTITIES]]],
+              ['!', ['in', ['get', 'iso_a2'], ['literal', EXCLUDED_CODES]]],
             ];
 
             if (existingFilter) {
