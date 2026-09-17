@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Activity, Radio } from 'lucide-react';
+import { Activity, SunMoon, Radio } from 'lucide-react';
 import { useGlobeStore } from '../../stores/useGlobeStore';
 import { useEarthquakes } from '../earthquakes';
 
@@ -26,7 +26,10 @@ function StatRow({ icon, label, count, color }: StatRowProps) {
 
 function LayerStatsInner() {
   const earthquakesEnabled = useGlobeStore((s) => s.layers.earthquakes);
+  const dayNightEnabled = useGlobeStore((s) => s.layers.dayNight);
   const { data: earthquakes = [], isLoading: isEarthquakesLoading } = useEarthquakes();
+
+  const hasAnyLayer = earthquakesEnabled || dayNightEnabled;
 
   return (
     <div className="flex flex-col gap-2">
@@ -38,7 +41,15 @@ function LayerStatsInner() {
           color="text-orange-400"
         />
       )}
-      {!earthquakesEnabled && (
+      {dayNightEnabled && (
+        <StatRow
+          icon={<SunMoon size={12} />}
+          label="Aydınlanma"
+          count="Canlı"
+          color="text-amber-300"
+        />
+      )}
+      {!hasAnyLayer && (
         <div className="flex items-center gap-2 text-zinc-600 text-xs">
           <Radio size={12} />
           <span>Katman seçilmedi</span>

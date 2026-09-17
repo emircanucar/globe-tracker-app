@@ -1,8 +1,10 @@
 import type { Map as MapLibreMap, GeoJSONSource } from 'maplibre-gl';
+import type { GeoJSONFeatureCollection } from '../../../types/geojson';
 import {
   EMPTY_FC,
   QUAKE_COLOR,
   EQ_LAYERS,
+  DAYNIGHT_LAYERS,
 } from '../config/layersConfig';
 
 /**
@@ -17,7 +19,75 @@ export function setupGlobeLayers(map: MapLibreMap) {
     map.addSource('earthquakes', { type: 'geojson', data: EMPTY_FC });
   }
 
-  /* 3. Earthquake layers */
+  if (!map.getSource('daynight-shadow')) {
+    map.addSource('daynight-shadow', { type: 'geojson', data: EMPTY_FC });
+  }
+
+  if (!map.getSource('daynight-terminator')) {
+    map.addSource('daynight-terminator', { type: 'geojson', data: EMPTY_FC });
+  }
+
+  if (!map.getSource('daynight-sun')) {
+    map.addSource('daynight-sun', { type: 'geojson', data: EMPTY_FC });
+  }
+
+  /* 3. Day / Night Environmental Overlay Layers (Placed below data layers) */
+  if (!map.getLayer('night-shadow')) {
+    map.addLayer({
+      id: 'night-shadow',
+      type: 'fill',
+      source: 'daynight-shadow',
+      paint: {
+        'fill-color': '#020617',
+        'fill-opacity': 0.52,
+      },
+    });
+  }
+
+  if (!map.getLayer('terminator-line')) {
+    map.addLayer({
+      id: 'terminator-line',
+      type: 'line',
+      source: 'daynight-terminator',
+      paint: {
+        'line-color': '#38bdf8',
+        'line-width': 2,
+        'line-opacity': 0.45,
+        'line-blur': 3,
+      },
+    });
+  }
+
+  if (!map.getLayer('sun-glow')) {
+    map.addLayer({
+      id: 'sun-glow',
+      type: 'circle',
+      source: 'daynight-sun',
+      paint: {
+        'circle-radius': 22,
+        'circle-color': '#f59e0b',
+        'circle-opacity': 0.28,
+        'circle-blur': 1,
+      },
+    });
+  }
+
+  if (!map.getLayer('sun-core')) {
+    map.addLayer({
+      id: 'sun-core',
+      type: 'circle',
+      source: 'daynight-sun',
+      paint: {
+        'circle-radius': 6,
+        'circle-color': '#fef08a',
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-opacity': 0.9,
+      },
+    });
+  }
+
+  /* 4. Earthquake Data Layers (Always visible on top of environmental shadow) */
   if (!map.getLayer('eq-glow')) {
     map.addLayer({
       id: 'eq-glow',
@@ -86,6 +156,19 @@ export function syncGeoJsonSource<T extends { lat: number; lng: number }>(
 }
 
 /**
+ * Directly updates a GeoJSON source with a FeatureCollection
+ */
+export function syncGeoJsonDirect(
+  map: MapLibreMap,
+  sourceId: string,
+  data: GeoJSONFeatureCollection<any>
+) {
+  const src = map.getSource(sourceId) as GeoJSONSource | undefined;
+  if (!src) return;
+  src.setData(data as any);
+}
+
+/**
  * Updates visibility for an array of layer IDs
  */
 export function setLayersVisibility(
@@ -101,4 +184,4 @@ export function setLayersVisibility(
   }
 }
 
-export { EQ_LAYERS };
+export { EQ_LAYERS, DAYNIGHT_LAYERS };

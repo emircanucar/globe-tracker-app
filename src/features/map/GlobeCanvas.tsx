@@ -4,12 +4,15 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { useGlobeStore, DEFAULT_CAMERA } from '../../stores/useGlobeStore';
 import { useEarthquakes, type EarthquakePoint } from '../earthquakes';
+import { generateDayNightGeoJSON } from '../daynight';
 import { getMapStyleUrl } from './config/mapStyles';
 import {
   setupGlobeLayers,
   syncGeoJsonSource,
+  syncGeoJsonDirect,
   setLayersVisibility,
   EQ_LAYERS,
+  DAYNIGHT_LAYERS,
 } from './utils/mapLayerUtils';
 import { enhanceMapStyle } from './utils/styleEnhancer';
 
@@ -28,6 +31,7 @@ function GlobeCanvasInner() {
   const flyTo = useGlobeStore((s) => s.flyTo);
 
   const eqVisible = useGlobeStore((s) => s.layers.earthquakes);
+  const dayNightVisible = useGlobeStore((s) => s.layers.dayNight);
 
   /* Data queries */
   const { data: earthquakes = [] } = useEarthquakes();
@@ -38,6 +42,9 @@ function GlobeCanvasInner() {
 
   const eqVisRef = useRef<boolean>(eqVisible);
   eqVisRef.current = eqVisible;
+
+  const dayNightVisRef = useRef<boolean>(dayNightVisible);
+  dayNightVisRef.current = dayNightVisible;
 
   /* Helper to re-sync all sources, layers, and transparent sky */
   const rehydrateMap = useCallback(
@@ -51,8 +58,17 @@ function GlobeCanvasInner() {
         'fog-ground-blend': 0.8,
         'atmosphere-blend': 0.85,
       });
+
+      // 1. Earthquakes sync
       syncGeoJsonSource(map, 'earthquakes', eqDataRef.current);
       setLayersVisibility(map, EQ_LAYERS, eqVisRef.current);
+
+      // 2. Day / Night sync
+      const dnData = generateDayNightGeoJSON();
+      syncGeoJsonDirect(map, 'daynight-shadow', dnData.nightPolygonFC);
+      syncGeoJsonDirect(map, 'daynight-terminator', dnData.terminatorLineFC);
+      syncGeoJsonDirect(map, 'daynight-sun', dnData.sunPointFC);
+      setLayersVisibility(map, DAYNIGHT_LAYERS, dayNightVisRef.current);
     },
     [currentStyle]
   );
@@ -176,19 +192,57 @@ function GlobeCanvasInner() {
     });
   }, [currentStyle, mapReady, rehydrateMap]);
 
-  /* ── 3. Data Synchronization ────────────────────────────── */
+  /* ── 3. Data Synchronization: Earthquakes ────────────────── */
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
     syncGeoJsonSource(mapRef.current, 'earthquakes', earthquakes);
   }, [earthquakes, mapReady]);
 
-  /* ── 4. Layer Visibility ────────────────────────────────── */
+  /* ── 4. Layer Visibility: Earthquakes ────────────────────── */
   useEffect(() => {
     if (!mapReady || !mapRef.current) return;
     setLayersVisibility(mapRef.current, EQ_LAYERS, eqVisible);
   }, [eqVisible, mapReady]);
 
-  /* ── 5. Camera FlyTo Transitions ────────────────────────── */
+  /* ── 5. Day / Night Synchronization & Periodic Solar Tick ── */
+  useEffect(() => {
+    if (!mapReady || !mapRef.current) return;
+    const map = mapRef.current;
+
+    setLayersVisibility(map, DAYNIGHT_LAYERS, dayNightVisible);
+
+    if (!dayNightVisible) return;
+
+    const updateSolarData = () => {
+      if (!mapRef.current) return;
+      const dnData = generateDayNightGeoJSON();
+      syncGeoJsonDirect(mapRef.current, 'daynight-shadow', dnData.nightPolygonFC);
+      syncGeoJsonDirect(mapRef.current, 'daynight-terminator', dnData.terminatorLineFC);
+      syncGeoJsonDirect(mapRef.current, 'daynight-sun', dnData.sunPointFC);
+    };
+
+    updateSolarData();
+
+    // Periodic solar position update every 60 seconds
+    const interval = setInterval(updateSolarData, 60000);
+
+    // Instant update when tab becomes active or device wakes from sleep
+    const handleWakeOrFocus = () => {
+      if (document.visibilityState === 'visible') {
+        updateSolarData();
+      }
+    };
+    document.addEventListener('visibilitychange', handleWakeOrFocus);
+    window.addEventListener('focus', handleWakeOrFocus);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleWakeOrFocus);
+      window.removeEventListener('focus', handleWakeOrFocus);
+    };
+  }, [dayNightVisible, mapReady]);
+
+  /* ── 6. Camera FlyTo Transitions ────────────────────────── */
   useEffect(() => {
     if (!mapReady || !cameraTarget || !mapRef.current) return;
     mapRef.current.flyTo({

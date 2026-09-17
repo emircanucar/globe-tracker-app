@@ -43,6 +43,7 @@ export const DEFAULT_CAMERA: CameraState = {
 
 export interface Layers {
   earthquakes: boolean;
+  dayNight: boolean;
 }
 
 /* ── Store ──────────────────────────────────────────────── */
@@ -71,7 +72,7 @@ interface GlobeState {
 }
 
 export const useGlobeStore = create<GlobeState>((set, get) => ({
-  layers: { earthquakes: false },
+  layers: { earthquakes: false, dayNight: false },
   minQuakeMag: 6.0,
   selectedItem: null,
   cameraTarget: null,
@@ -87,11 +88,9 @@ export const useGlobeStore = create<GlobeState>((set, get) => ({
     set((state) => {
       const isCurrentlyActive = state.layers[layer];
       const newLayers: Layers = {
-        earthquakes: false,
+        ...state.layers,
+        [layer]: !isCurrentlyActive,
       };
-      if (!isCurrentlyActive) {
-        newLayers[layer] = true;
-      }
 
       // Deselect item if its layer is deactivated
       let newSelectedItem = state.selectedItem;

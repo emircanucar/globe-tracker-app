@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Activity } from 'lucide-react';
+import { Activity, SunMoon } from 'lucide-react';
 import { useGlobeStore, type Layers } from '../../stores/useGlobeStore';
 import { GlassPanel } from '../../components/ui';
 import LayerItem from './LayerItem';
@@ -18,6 +18,12 @@ const LAYERS: LayerConfig[] = [
     icon: <Activity size={14} />,
     activeAccent: 'text-orange-400',
   },
+  {
+    key: 'dayNight',
+    label: 'Gece / Gündüz',
+    icon: <SunMoon size={14} />,
+    activeAccent: 'text-amber-300',
+  },
 ];
 
 interface LayerMenuProps {
@@ -35,8 +41,8 @@ function LayerMenuInner({ className = '' }: LayerMenuProps) {
         Katmanlar
       </span>
 
-      {/* Radio Group */}
-      <div className="flex flex-col gap-1.5" role="radiogroup" aria-label="Katman Seçimi">
+      {/* Layer Toggle Items */}
+      <div className="flex flex-col gap-1.5" role="group" aria-label="Katman Seçimi">
         {LAYERS.map((cfg) => (
           <LayerItem
             key={cfg.key}

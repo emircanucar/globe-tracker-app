@@ -18,4 +18,10 @@ export const QUAKE_COLOR: any = [
 /* ── Layer ID Collections ──────────────────────────────── */
 
 export const EQ_LAYERS = ['eq-glow', 'eq-main', 'eq-pulse'] as const;
+export const DAYNIGHT_LAYERS = [
+  'night-shadow',
+  'terminator-line',
+  'sun-glow',
+  'sun-core',
+] as const;
 export const INTERACTIVE_LAYERS = ['eq-main'] as const;
