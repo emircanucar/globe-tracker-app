@@ -1,6 +1,6 @@
 # Globe Tracker — 3D Coğrafi Veri Merkezi
 
-Deprem ve uçuş hareketlerini 3D küre projeksiyonu üzerinde gösteren coğrafi takip uygulaması.
+Bazı deprem hareketlerini 3D küre projeksiyonu üzerinde gösteren coğrafi takip uygulaması.
 
 ---
 
